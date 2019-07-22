@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body  {
+            background-image: url("http://sfwallpaper.com/images/all-white-wallpaper-10.jpg");
+        }
+        .column {
+            float: left;
+            width: 50%;
+            padding: 5px;
+            border: 2px solid grey
+        }
+        .column2 {
+            float: left;
+            width: 20%;
+            padding: 5px;
+            border: 0.5px solid grey;
+            column-gap:20px
+        }
+        
+        /* Clearfix (clear floats) */
+        .row::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+    <title>Borjoo.com</title>
+</head>
+<body style = "text-align: center">
+    <div style = "position: fixed; width: 100%">
+        <div style = "background-color: white; left : 0; text-align: left; height: 70px; border-bottom: 4.5px solid black">
+            <img src = "../logo.png" style = "height:70px; border-bottom: 5px solid black"/>
+        </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style = "border-bottom: 1px solid black"> 
+            <a class="navbar-brand" href="#"><b>Borjoo.com</b></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/login">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/signup">Sign Up</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="http://localhost:5000/visualization">Data Visualization</a>
+                </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" action = "http://localhost:5000/postproduct" method = "POST" autocomplete = "off">
+                    <input class="form-control mr-sm-2" name="ProductId" style="width:250px" type="search" placeholder="Type in your product code" aria-label="Search">
+                    <button type="submit" class="btn btn-outline-secondary">Find product!</button>
+                </form>
+            </div>
+        </nav>
+    </div>
+    <br><br><br><br><br><br>
+    <div style="padding: 30px; background-color: lightgray; ">
+        <h4 class="display-4">What about the categories?</h4>
+        <h2 class="display-4" style="font-size: 30px">The database obtained from Amazon products metadata in <i>Automotive</i> category, which includes another <i>2495</i> sub categories.</h2>
+    </div>
+    <br>
+    <h2>This is the breakdown of the top ten sub categories:</h2>
+    <img src="../Categories/bar_categories_top10.png" style="border: 1px solid grey"/>
+    <br><br>
+    <a href="http://localhost:5000/visualization">
+        <button type="button" class="btn btn-outline-dark">Back</button>
+    </a>
+    <br><br>
+</body>
+</html>
