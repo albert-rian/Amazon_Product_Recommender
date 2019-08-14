@@ -34,7 +34,10 @@ WWW, 2016
         ![UserPage1](./ss4.png)
         ![UserPage2](./ss5.png)
 
-    c. Popularity based. For other pages, I only used popularity based method (randomly select items where score = 5 from the database). See below:
+    c. Content based. On the product page, I also equip the recommendations with 5 other products that have a similar content (3 products with similar sub-category and 2 products with similar brand). See below:
+        ![ContentBased](./ss8.png)
+    
+    d. Popularity based. For other pages, I only used popularity based method (randomly select items where score = 5 from the database). This algorithm designed for the home page and the product page for the product which has below 100 reviews. See below:
         ![Popularity1](./ss6.png)
         ![Popularity2](./ss7.png)
 5. Try other features on the website:

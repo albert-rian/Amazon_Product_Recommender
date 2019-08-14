@@ -6,6 +6,7 @@ import json
 import joblib
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from pandas import DataFrame
+from ast import literal_eval
 
 app = Flask(__name__, static_url_path='')         
 
@@ -18,6 +19,8 @@ df_Data = df_Data.fillna({
 })
 df_Data['price'] = round(df_Data['price'], 2)
 
+df_content_based = pd.read_csv('metaData_for_contentbased.csv', converters={"categories": lambda x: x.replace("'", "").strip("[]").split(", ")})
+df_content_based = df_content_based.drop('Unnamed: 0', 1)
 
 # ===========================================================================================
 # ML model for PB
@@ -240,6 +243,43 @@ def buyproduct():
 @app.route('/product/<string:ProductId>')
 def product(ProductId):   
     prodCat = [df_Data[df_Data['asin'] == ProductId]['categories'].values[0].strip('[]')]
+
+    if len(df_content_based[df_content_based['asin'] == ProductId]['categories'].values[0]) > 1:
+        prod_sub_cat = df_content_based[df_content_based['asin'] == ProductId]['categories'].values[0][1]
+    else:
+        prod_sub_cat = df_content_based[df_content_based['asin'] == ProductId]['categories'].values[0][0]
+    
+    prod_brand = df_content_based[df_content_based['asin'] == ProductId]['brand'].values[0]
+    
+    similar_sub_cat = []
+    similar_brand = []
+
+    for i in range(len(df_content_based)):
+        if prod_sub_cat in df_content_based['categories'].iloc[i]:
+            similar_sub_cat.append(df_content_based['asin'].iloc[i])
+        if df_content_based['brand'].iloc[i] == prod_brand:
+            similar_brand.append(df_content_based['asin'].iloc[i])
+
+    prod_of_the_day = []
+    for i in range(len(df_sum_clean_PB)):
+        if df_sum_clean_PB['AvgScore'][i] >= 4.5:
+            prod_of_the_day.append(df_sum_clean_PB['ProductId'][i])
+    prod_of_the_day = random.sample(prod_of_the_day, 5)
+
+    for i in range(3):
+        if len(similar_sub_cat) < 3:
+            similar_sub_cat.append(prod_of_the_day[i])
+        elif len(similar_sub_cat) == 3:
+            break
+    
+    if len(similar_brand) == 0:
+        similar_brand.append(prod_of_the_day[3])
+        similar_brand.append(prod_of_the_day[4])
+    if len(similar_brand) == 1:
+        similar_brand.append(prod_of_the_day[3])
+
+    similar_sub_cat = random.sample(similar_sub_cat, k = 3)
+    similar_brand = random.sample(similar_brand, k = 2)
     
     if ProductId in df_sum_clean_PB['ProductId'].values:
         prodIndex = df_sum_clean_PB[df_sum_clean_PB['ProductId'] == ProductId].index.values[0]
@@ -259,7 +299,25 @@ def product(ProductId):
                 df_Data[df_Data['asin'] == product_recommend_Id]['imUrl'].values[0]
             ]
             prodRec.append(rec_i)
-        line_rec = 'Based on the product above, here\'s our recommendations:'
+        
+        for i in range(3):
+            rec_i = [
+                similar_sub_cat[i],
+                df_Data[df_Data['asin'] == similar_sub_cat[i]]['title'].values[0],  
+                df_Data[df_Data['asin'] == similar_sub_cat[i]]['imUrl'].values[0]
+            ]
+            prodRec.append(rec_i)  
+            
+        for i in range(2):
+            rec_i = [
+                similar_brand[i],
+                df_Data[df_Data['asin'] == similar_brand[i]]['title'].values[0],  
+                df_Data[df_Data['asin'] == similar_brand[i]]['imUrl'].values[0]
+            ]
+            prodRec.append(rec_i)
+
+        line_rec_1 = 'Based on the product above, here\'s our recommendations:'
+        line_rec_2 = 'These products also has similar sub-category and brand:'
     else:
         prod_of_the_day = []
         for i in range(len(df_sum_clean_PB)):
@@ -275,10 +333,28 @@ def product(ProductId):
                 df_Data[df_Data['asin'] == prod_of_the_day[i]]['imUrl'].values[0]
             ]
             prodRec.append(rec_i)
-        line_rec = 'This product hasn\'t had 100 reviews yet, but here\'s our recommendation:'
+
+        for i in range(3):
+            rec_i = [
+                similar_sub_cat[i],
+                df_Data[df_Data['asin'] == similar_sub_cat[i]]['title'].values[0],  
+                df_Data[df_Data['asin'] == similar_sub_cat[i]]['imUrl'].values[0]
+            ]
+            prodRec.append(rec_i)  
+            
+        for i in range(2):
+            rec_i = [
+                similar_brand[i],
+                df_Data[df_Data['asin'] == similar_brand[i]]['title'].values[0],  
+                df_Data[df_Data['asin'] == similar_brand[i]]['imUrl'].values[0]
+            ]
+            prodRec.append(rec_i)
+
+        line_rec_1 = 'This product hasn\'t had 100 reviews yet, but here\'s our recommendation:'
+        line_rec_2 = 'These products also have similar sub-category and brand:'
         
     return render_template('product.html', 
-        df_Data = df_Data, ProductId = ProductId, prodCat = prodCat, prodRec = prodRec, line_rec = line_rec
+        df_Data = df_Data, ProductId = ProductId, prodCat = prodCat, prodRec = prodRec, line_rec_1 = line_rec_1, line_rec_2 = line_rec_2
     )
 
 # data visualization
